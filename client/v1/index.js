@@ -58,6 +58,10 @@ console.log(productNb);
 // 2. Log the variable
 // 3. Log how many brands we have
 
+const brands = new Set();
+marketplace.forEach(element => brands.add(element.brand));
+console.log(brands);
+console.log(brands.size);
 
 // 🎯 TODO: Sort by price
 // 1. Create a function to sort the marketplace products by price
