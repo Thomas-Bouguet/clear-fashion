@@ -32,9 +32,10 @@ console.log(MY_FAVORITE_BRANDS[0]);
 // I can find on these e-shops
 // 2. Log the variable
 
-
-
-
+MY_FAVORITE_BRANDS[0].Cheapest_tshirt='https://hopaal.com/collections/t-shirts-homme/products/classique-forest-t-shirt-homme?variant=19733822111830';
+MY_FAVORITE_BRANDS[1].Cheapest_tshirt='https://www.loom.fr/products/le-t-shirt-femme?variant=39858026053784';
+MY_FAVORITE_BRANDS[2].Cheapest_tshirt='https://adresse.paris/t-shirts-et-polos/4336-t-shirt-thomas-lateur-1300000266864.html#/79-taille_fastmag-m';
+MY_FAVORITE_BRANDS.forEach(element => console.log(element.Cheapest_tshirt))
 
 /**
  * 👕
