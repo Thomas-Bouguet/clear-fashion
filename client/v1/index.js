@@ -68,6 +68,26 @@ console.log(brands.size);
 // 2. Create a variable and assign it the list of products by price from lowest to highest
 // 3. Log the variable
 
+function sortMP() {
+
+  const sortedMP = [];
+
+  function sortedAdd(val) {
+    if(sortedMP.length===0) {
+      sortedMP.push(val);
+    } else {
+      for(let i = 0; i < sortedMP.length; i++) {
+        if(val.price<=sortedMP[i].price || i===sortedMP.length-1) {
+          sortedMP.splice(i,0,val);
+          break;
+        }
+      }
+    }
+  }
+  marketplace.forEach(element => sortedAdd(element));
+  return sortedMP;
+}
+console.log(sortMP());
 
 // 🎯 TODO: Sort by date
 // 1. Create a function to sort the marketplace objects by products date
