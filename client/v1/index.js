@@ -94,6 +94,26 @@ console.log(sortMP());
 // 2. Create a variable and assign it the list of products by date from recent to old
 // 3. Log the variable
 
+function sortMPbyDate() {
+
+  const sortedMP = [];
+
+  function sortedAdd(val) {
+    if(sortedMP.length===0) {
+      sortedMP.push(val);
+    } else {
+      for(let i = 0; i < sortedMP.length; i++) {
+        if(val.date<=sortedMP[i].date || i===sortedMP.length-1) {
+          sortedMP.splice(i,0,val);
+          break;
+        }
+      }
+    }
+  }
+  marketplace.forEach(element => sortedAdd(element));
+  return sortedMP;
+}
+console.log(sortMPbyDate());
 
 // 🎯 TODO: Filter a specific price range
 // 1. Filter the list of products between 50€ and 100€
