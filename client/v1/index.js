@@ -103,7 +103,7 @@ function sortMPbyDate() {
       sortedMP.push(val);
     } else {
       for(let i = 0; i < sortedMP.length; i++) {
-        if(val.date<=sortedMP[i].date || i===sortedMP.length-1) {
+        if(val.date>=sortedMP[i].date || i===sortedMP.length-1) {
           sortedMP.splice(i,0,val);
           break;
         }
@@ -119,13 +119,18 @@ console.log(sortMPbyDate());
 // 1. Filter the list of products between 50€ and 100€
 // 2. Log the list
 
+console.log(marketplace.filter(mp => (mp.price>=50 && mp.price<=100)));
 
 // 🎯 TODO: Average Basket
 // 1. Determine the average basket of the marketplace
 // 2. Log the average
 
-
-
+var avg=0
+for(let i = 0; i < productNb; i++) {
+  avg+=marketplace[i].price;
+}
+avg/=productNb;
+console.log(avg);
 
 
 /**
@@ -151,19 +156,38 @@ console.log(sortMPbyDate());
 // 2. Log the variable
 // 3. Log the number of products by brands
 
+const product_by_brand = {};
+for(let i = 0; i < productNb; i++) {
+  const brandi = marketplace[i].brand;
+  const {brand, ...mpi} = marketplace[i];
+  if(brandi in product_by_brand) {
+    product_by_brand[brandi].push(mpi);
+  } else {
+    product_by_brand[brandi] = [mpi];
+  }
+}
+console.log(product_by_brand);
+for(const [key,val] of Object.entries(product_by_brand)) {
+  console.log(key, ': ', val.length);
+};
 
 // 🎯 TODO: Sort by price for each brand
 // 1. For each brand, sort the products by price, from highest to lowest
 // 2. Log the sort
 
+for(const [key,val] of Object.entries(product_by_brand)) {
+  val.sort((a,b) => b.price-a.price);
+}
+console.log(product_by_brand);
 
 // 🎯 TODO: Sort by date for each brand
 // 1. For each brand, sort the products by date, from old to recent
 // 2. Log the sort
 
-
-
-
+for(const [key,val] of Object.entries(product_by_brand)) {
+  val.sort(a => a.date);
+}
+console.log(product_by_brand);
 
 /**
  * 💶
