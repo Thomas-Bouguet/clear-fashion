@@ -185,7 +185,7 @@ console.log(product_by_brand);
 // 2. Log the sort
 
 for(const [key,val] of Object.entries(product_by_brand)) {
-  val.sort(a => a.date);
+  val.sort( a => a.date);
 }
 console.log(product_by_brand);
 
