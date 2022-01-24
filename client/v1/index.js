@@ -121,8 +121,8 @@ console.log(sortMPbyDate());
 
 console.log(marketplace.filter(mp => (mp.price>=50 && mp.price<=100)));
 
-// 🎯 TODO: Average Basket
-// 1. Determine the average basket of the marketplace
+// 🎯 TODO: Average price
+// 1. Determine the average price of the marketplace
 // 2. Log the average
 
 var avg=0
