@@ -87,7 +87,8 @@ function sortMP() {
   marketplace.forEach(element => sortedAdd(element));
   return sortedMP;
 }
-console.log(sortMP());
+const sortedMarketPlace = sortMP();
+console.log(sortedMarketPlace);
 
 // 🎯 TODO: Sort by date
 // 1. Create a function to sort the marketplace objects by products date
@@ -200,7 +201,8 @@ console.log(product_by_brand);
 // 1. Compute the p90 price value of each brand
 // The p90 value (90th percentile) is the lower value expected to be exceeded in 90% of the products
 
-
+var p90 = sortedMarketPlace[parseInt(Math.round(0.9*(sortedMarketPlace.length+1)))].price;
+console.log(p90);
 
 
 
@@ -276,20 +278,44 @@ const COTELE_PARIS = [
 // // 1. Log if we have new products only (true or false)
 // // A new product is a product `released` less than 2 weeks.
 
+const now=Date.now();
+const isRecent = (value) => now-Date.parse(value.released) < 14*24*60*60;
+
+const recent = COTELE_PARIS.some(isRecent);
+
+console.log(recent);
 
 // 🎯 TODO: Reasonable price
 // // 1. Log if coteleparis is a reasonable price shop (true or false)
 // // A reasonable price if all the products are less than 100€
 
+const isReasonable = (value) => value.price < 100;
+const reasonable = COTELE_PARIS.every(isReasonable);
+
+console.log(reasonable);
 
 // 🎯 TODO: Find a specific product
 // 1. Find the product with the uuid `b56c6d88-749a-5b4c-b571-e5b5c6483131`
 // 2. Log the product
 
+var CP_i = 0;
+var product_to_find = {};
+
+while(CP_i<COTELE_PARIS.length && Object.keys(product_to_find).length===0) {
+  if (COTELE_PARIS[CP_i].uuid=='b56c6d88-749a-5b4c-b571-e5b5c6483131') {
+    product_to_find = COTELE_PARIS[CP_i];
+  }
+  CP_i+=1;
+}
+
+console.log(product_to_find);
 
 // 🎯 TODO: Delete a specific product
 // 1. Delete the product with the uuid `b56c6d88-749a-5b4c-b571-e5b5c6483131`
 // 2. Log the new list of product
+
+COTELE_PARIS.splice(CP_i-1,1);
+console.log(COTELE_PARIS);
 
 // 🎯 TODO: Save the favorite product
 let blueJacket = {
@@ -300,12 +326,15 @@ let blueJacket = {
 
 // we make a copy of blueJacket to jacket
 // and set a new property `favorite` to true
+
 let jacket = blueJacket;
 
 jacket.favorite = true;
 
 // 1. Log `blueJacket` and `jacket` variables
 // 2. What do you notice?
+
+console.log(blueJacket);
 
 blueJacket = {
   'link': 'https://coteleparis.com/collections/tous-les-produits-cotele/products/la-veste-bleu-roi',
@@ -315,9 +344,12 @@ blueJacket = {
 
 // 3. Update `jacket` property with `favorite` to true WITHOUT changing blueJacket properties
 
+jacket = Object.assign({},blueJacket);
 
+jacket.favorite = true;
 
-
+console.log(blueJacket);
+console.log(jacket);
 
 /**
  * 🎬
@@ -328,3 +360,6 @@ blueJacket = {
 // 🎯 TODO: Save in localStorage
 // 1. Save MY_FAVORITE_BRANDS in the localStorage
 // 2. log the localStorage
+
+localStorage.setItem('MY_FAVORITE_BRANDS',JSON.stringify(MY_FAVORITE_BRANDS));
+console.log(localStorage);
