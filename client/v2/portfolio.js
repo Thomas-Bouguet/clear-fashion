@@ -169,21 +169,20 @@ const render = (products, pagination) => {
 
 /**
  * Select the number of products to display
- * @type {[type]}
  */
-selectShow.addEventListener('change', event => {
+selectShow.addEventListener('change', async (event) => {
   fetchProducts(currentPagination.currentPage, parseInt(event.target.value), selectBrand.value)
     .then(setCurrentProducts)
     .then(() => render(currentProducts, currentPagination));
 });
 
-selectPage.addEventListener('change', event => {
+selectPage.addEventListener('change', async (event) => {
   fetchProducts(parseInt(event.target.value), selectShow.value, selectBrand.value)
     .then(setCurrentProducts)
     .then(() => render(currentProducts, currentPagination));
 });
 
-selectBrand.addEventListener('change', event => {
+selectBrand.addEventListener('change', async (event) => {
   fetchProducts(selectPage.value, selectShow.value, event.target.value)
     .then(setCurrentProducts)
     .then(() => render(currentProducts, currentPagination));
