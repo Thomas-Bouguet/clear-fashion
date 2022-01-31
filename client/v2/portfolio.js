@@ -37,13 +37,19 @@ const setCurrentBrands = (brands) => {
  * @param  {Number}  [size=12] - size of the page
  * @return {Object}
  */
-const fetchProducts = async (page = 1, size = 12) => {
+const fetchProducts = async (page = 1, size = 12, brnd = 'All') => {
   if (page>Math.ceil(currentPagination.count/size)) {
     page=1;
   }
   try {
+    let toFetch = new String;
+    if (brnd === 'All') {
+      toFetch = `https://clear-fashion-api.vercel.app?page=${page}&size=${size}`;
+    } else {
+      toFetch = `https://clear-fashion-api.vercel.app?page=${page}&size=${size}&brand=${brnd}`;
+    }
     const response = await fetch(
-      `https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
+      toFetch
     );
     const body = await response.json();
 
@@ -109,33 +115,6 @@ const renderProducts = products => {
   sectionProducts.appendChild(fragment);
 };
 
-const renderProductsByBrand = (products,brnd) => {
-  if(brnd==='All') {
-    renderProducts(products);
-  } else {
-    const fragment = document.createDocumentFragment();
-    const div = document.createElement('div');
-    const template = products
-      .map(product => {
-        if (product.brand === brnd) {
-          return `
-          <div class="product" id=${product.uuid}>
-            <span>${product.brand}</span>
-            <a href="${product.link}">${product.name}</a>
-            <span>${product.price}</span>
-          </div>
-        `;
-        }
-      })
-      .join('');
-
-    div.innerHTML = template;
-    fragment.appendChild(div);
-    sectionProducts.innerHTML = '<h2>Products</h2>';
-    sectionProducts.appendChild(fragment);
-  }
-}
-
 /**
  * Render page selector
  * @param  {Object} pagination
@@ -173,12 +152,11 @@ const renderBrands = () => {
   selectBrand.innerHTML = select.join('');
 }
 
-const renderByBrand = (products, pagination, brnd) => {
-  renderProductsByBrand(products,brnd);
-  renderPagination(pagination);
-  renderIndicators(pagination);
-}
-
+/**
+ * Render all renders
+ * @param {Object} products 
+ * @param {Object} pagination 
+ */
 const render = (products, pagination) => {
   renderProducts(products);
   renderPagination(pagination);
@@ -194,21 +172,21 @@ const render = (products, pagination) => {
  * @type {[type]}
  */
 selectShow.addEventListener('change', event => {
-  fetchProducts(currentPagination.currentPage, parseInt(event.target.value))
+  fetchProducts(currentPagination.currentPage, parseInt(event.target.value), selectBrand.value)
     .then(setCurrentProducts)
     .then(() => render(currentProducts, currentPagination));
 });
 
 selectPage.addEventListener('change', event => {
-  fetchProducts(parseInt(event.target.value), selectShow.value)
+  fetchProducts(parseInt(event.target.value), selectShow.value, selectBrand.value)
     .then(setCurrentProducts)
     .then(() => render(currentProducts, currentPagination));
 });
 
 selectBrand.addEventListener('change', event => {
-  fetchProducts()
+  fetchProducts(selectPage.value, selectShow.value, event.target.value)
     .then(setCurrentProducts)
-    .then(() => renderByBrand(currentProducts, currentPagination, event.target.value));
+    .then(() => render(currentProducts, currentPagination));
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
