@@ -109,7 +109,7 @@ app.get('/products/search', async function (req, res) {
       });
   
   //res.send(gotten);
-  res.send({"data":{"result":gotten,"meta":gotten_meta}, "success":true});
+  res.send({"data":{"result":gotten,"meta":gotten_meta}, "success":success});
 });
 
 app.listen(PORT);
