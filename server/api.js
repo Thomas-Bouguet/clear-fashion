@@ -23,13 +23,16 @@ app.get('/', (request, response) => {
 app.get('/products/search', async function (req, res) {
 
   let params = req.query;
-  let limit = null;
+  let size = 12;
+  let page = 1;
 
-  console.log(req.query);
-
-  if (params.hasOwnProperty("limit")) {
-    limit = params.limit;
-    delete params.limit;
+  if (params.hasOwnProperty("size")) {
+    size = parseInt(params.size);
+    delete params.size;
+  }
+  if (params.hasOwnProperty("page")) {
+    page = parseInt(params.page);
+    delete params.page;
   }
 
   var data = {
@@ -39,13 +42,16 @@ app.get('/products/search', async function (req, res) {
       "filter": params
   };
 
-  if (limit!=null) {
-    data.limit = parseInt(limit);
-  }
-
-  data = JSON.stringify(data);
+  data.skip = size*(page-1);
+  data.limit = size;
 
   console.log(data);
+
+  /*if (limit!=null) {
+    data.limit = parseInt(limit);
+  }*/
+
+  data = JSON.stringify(data);
 
   var config = {
       method: 'post',
@@ -72,6 +78,7 @@ app.get('/products/search', async function (req, res) {
   res.send(gotten);
 });
 
+// Developping function to rerun the api faster
 app.get('/exit', function (req,res) {
   app.listen(PORT).close();
 });

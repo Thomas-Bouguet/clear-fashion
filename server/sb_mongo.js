@@ -47,7 +47,7 @@ async function sandbox (eshop = ['https://www.dedicatedbrand.com/en/men/all-men'
     console.log('done');
 
     a_products.forEach(product => all_products.push(product));
-
+    
     return all_products;
   } catch (e) {
     console.error(e);
