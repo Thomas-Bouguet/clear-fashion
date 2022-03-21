@@ -99,7 +99,7 @@ app.get('/products/search', async function (req, res) {
 
   await axios(config)
       .then(function (response) {
-          gotten = JSON.stringify(response.data);
+          gotten = response.data;
           gotten_meta = {"count":counted, "currentPage":currentPage, "pageCount":pageCount, "pageSize":pageSize};
       })
       .catch(function (error) {
