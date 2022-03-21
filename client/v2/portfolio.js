@@ -66,9 +66,9 @@ const fetchProducts = async (page = 1, size = 12, brnd = 'All', date = 'All', pr
   try { 
     let toFetch = new String;
     if (brnd === 'All') {
-      toFetch = `https://clear-fashion-navy.vercel.app/products/search?page=${page}&size=${size}`; // API prof :`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
+      toFetch = `https://clear-fashion-navy.vercel.app/products/search?page=${page}&size=${size}`; // API prof :*/`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`;
     } else {
-      toFetch = `https://clear-fashion-navy.vercel.app/products/search?page=${page}&size=${size}&brand=${brnd}`;
+      toFetch = /*`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`; //*/`https://clear-fashion-navy.vercel.app/products/search?page=${page}&size=${size}&brand=${brnd}`;
     }
     const response = await fetch(
       toFetch
