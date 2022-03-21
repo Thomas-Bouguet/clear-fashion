@@ -1,0 +1,129 @@
+html {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+h1 {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    font-size: 300%;
+}
+
+h2 {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    font-size: 200%;
+}
+
+section {
+    position: relative;
+
+    background-color: #eee;
+
+    border-radius: 20px;
+
+    margin: 10px;
+    padding: 10px;
+}
+
+.div_in_section {
+    position: relative;
+    margin: 0px;
+    padding: 2px;
+}
+
+.sections {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+
+    margin-top: 100px;
+    margin-left: 100px;
+    margin-bottom: 100px;
+}
+
+.subsections {
+    position: relative;
+    margin-left: 80px;
+}
+
+
+.subsections .label {
+    position: relative;
+    
+    width: 200px;
+    display: inline-block;
+
+    text-align: right;
+}
+
+.subsections .indicator {
+    position: relative;
+
+    width: 100px;
+
+    display: inline-block;
+}
+
+#options label {
+    display: inline-block;    
+    width: 200px;
+    
+    text-align: right;
+}
+
+.products_section {
+    position: relative;
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.product {
+    position: relative;
+    margin: 4px;
+    padding: 4px;
+
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.sub_product {
+    position: relative;
+}
+
+.product_a {
+    margin-right: 6px;
+}
+
+.product_span1 {
+    margin-right: 6px;
+}
+
+.product_span2 {
+    margin-right: 6px;
+}
+
+button {
+    border-radius: 5px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+select {
+    border-radius: 5px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+input {
+    border-radius: 5px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* section div {
+    position: relative;
+    margin: 0px;
+    padding: 10px;
+
+    border: solid red;
+} */
