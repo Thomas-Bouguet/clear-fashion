@@ -54,6 +54,7 @@ app.get('/products/search', async function (req, res) {
   let params = req.query;
   let size = 12;
   let page = 1;
+  let tempCount = -1;
 
   if (params.hasOwnProperty("size")) {
     size = parseInt(params.size);
@@ -63,6 +64,37 @@ app.get('/products/search', async function (req, res) {
     page = parseInt(params.page);
     delete params.page;
   }
+  if (params.hasOwnProperty("brand")) {
+    var data = {
+      "collection": "products",
+      "database": "DB_MONGO_WEB",
+      "dataSource": "Cluster0",
+      "filter": params
+  };
+    var config = {
+      method: 'post',
+      url: 'https://data.mongodb-api.com/app/data-acmwk/endpoint/data/beta/action/find',
+      headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Request-Headers': '*',
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "X-Requested-With",
+          'Access-Control-Expose-Headers': "X-Pagination-Current-Page, X-Pagination-Total-Count",
+          'api-key': 'Ofwp99K8tjmjhBUHdT8Af20ILr43K6DUclCPXcMTqGxm7un3ac7ZR4s7MIghRBuQ'
+      },
+      data : data
+    };
+
+    await axios(config)
+      .then(function (response) {
+          tempCount = JSON.stringify(response.data).match(/_id/g).length;
+      })
+      .catch(function (error) {
+        success = false;
+        console.log(error);
+        gotten = error;
+      });
+  };
 
   currentPage = page;
   pageCount = Math.ceil(counted/size);
@@ -100,6 +132,11 @@ app.get('/products/search', async function (req, res) {
   await axios(config)
       .then(function (response) {
           gotten = response.data.documents;
+          if (tempCount===-1) {
+            pageCount = Math.ceil(counted / size);
+          } else {
+            pageCount = Math.ceil(tempCount / size);
+          };
           gotten_meta = {"count":counted, "currentPage":currentPage, "pageCount":pageCount, "pageSize":pageSize};
       })
       .catch(function (error) {

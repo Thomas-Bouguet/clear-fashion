@@ -16,6 +16,7 @@ const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
 const selectBrand = document.querySelector('select[name="brand"]');
 const selectSort = document.querySelector('#sort-select');
+const selectFavorites = document.querySelector('#sort-favorites');
 
 const sectionProducts = document.querySelector('#products');
 
@@ -54,11 +55,14 @@ const setCurrentBrands = (brands) => {
  * @param  {Number}  [size=12] - size of the page
  * @return {Object}
  */
-const fetchProducts = async (page = 1, size = 12, brnd = 'All', date = 'All', price='All', toSort='none') => {
+const fetchProducts = async (page = 1, size = 12, brnd = 'All', date = 'All', price='All', toSort='none', byFav='none') => {
   if (date==='recent') {
-    return fetchRecentProducts(page, size, brnd, price, toSort);
+    return fetchRecentProducts(page, size, brnd, price, toSort, byFav);
   } else if (price==='reasonable') {
-    return fetchReasonableProducts(page, size, brnd, date, toSort);
+    return fetchReasonableProducts(page, size, brnd, date, toSort, byFav);
+  }
+  if (byFav==='on'||byFav==='off') {
+    return fetchFavProducts(page, size, brnd, date, price, toSort, byFav);
   }
   if (page>Math.ceil(currentPagination.count/size)) {
     page=1;
@@ -93,17 +97,27 @@ const fetchProducts = async (page = 1, size = 12, brnd = 'All', date = 'All', pr
 
 const reasonableProducts = (products) => {
   return products.filter((product) => product.price < 50);
-}
+};
 
 const recentProducts = (products) => {
   const now=Date.now();
   return products.filter((product) => now-Date.parse(product.released) < 14*24*60*60);
-}
+};
 
-const fetchRecentProducts = async (page = 1, size = 12, brnd = 'All', price='All', toSort='none') => {
+const favProducts = (products, favOn) => {
+  if (favOn === 'on') {
+    return products.filter((product) => favorites.some((prod) => prod._id === product._id));
+  } else {
+    return products.filter((product) => !favorites.some((prod) => prod._id === product._id));
+  };
+};
+
+const fetchRecentProducts = async (page = 1, size = 12, brnd = 'All', price='All', toSort='none', byFav='none') => {
   let fetched;
   if (price === 'reasonable') {
     fetched = await fetchReasonableProducts(1, currentPagination.count, brnd, 'All', toSort);
+  } else if (byFav === 'on'||byFav === 'off') {
+    fetched = await fetchFavProducts(1, currentPagination.count, brnd, 'All', 'All', toSort, byFav);
   } else {
     fetched = await fetchProducts(1, currentPagination.count, brnd, 'All', price, toSort);
   }
@@ -119,10 +133,12 @@ const fetchRecentProducts = async (page = 1, size = 12, brnd = 'All', price='All
   return fetched;
 }
 
-const fetchReasonableProducts = async (page = 1, size = 12, brnd = 'All', date='All', toSort='none') => {
+const fetchReasonableProducts = async (page = 1, size = 12, brnd = 'All', date='All', toSort='none', byFav='none') => {
   let fetched;
   if (date === 'recent') {
     fetched = await fetchRecentProducts(1, currentPagination.count, brnd, 'All', toSort);
+  } else if (byFav === 'on'||byFav === 'off') {
+    fetched = await fetchFavProducts(1, currentPagination.count, brnd, 'All', 'All', toSort, byFav);
   } else {
     fetched = await fetchProducts(1, currentPagination.count, brnd, date, 'All', toSort);
   }
@@ -130,6 +146,27 @@ const fetchReasonableProducts = async (page = 1, size = 12, brnd = 'All', date='
   
   const totalOfReasonable = fetched.result.length;
   fetched.meta.pageCount = Math.ceil(totalOfReasonable/size);
+  fetched.meta.pageSize = size;
+  if (fetched.meta.pageCount<page) { page=1; }
+  fetched.meta.currentPage = page;
+
+  fetched.result = fetched.result.slice((page-1)*size,page*size);
+  return fetched;
+};
+
+const fetchFavProducts = async (page = 1, size = 12, brnd = 'All', date='All', price='All', toSort='none', byFav='none') => {
+  let fetched;
+  if (price === 'reasonable') {
+    fetched = await fetchReasonableProducts(1, currentPagination.count, brnd, date, toSort);
+  } else if (date === 'recent') {
+    fetched = await fetchRecentProducts(1, currentPagination.count, brnd, price, toSort)
+  } else {
+    fetched = await fetchProducts(1, currentPagination.count, brnd, date, price, toSort);
+  }
+  fetched.result = favProducts(fetched.result, byFav);
+
+  const totalOfRecent = fetched.result.length;
+  fetched.meta.pageCount = Math.ceil(totalOfRecent/size);
   fetched.meta.pageSize = size;
   if (fetched.meta.pageCount<page) { page=1; }
   fetched.meta.currentPage = page;
@@ -175,7 +212,12 @@ const renderProducts = products => {
 
       const span2 = document.createElement('span');
       span2.setAttribute("class","product_span2")
-      span2.innerHTML = product.price.toString() + '€';
+      try {
+        span2.innerHTML = product.price.toString() + '€';
+      } catch (e) {
+        console.log('Error: ', e);
+        span2.innerHTML = "Unknown";
+      }
 
       const button = document.createElement('button');
       button.id = product.uuid+"_button";
@@ -267,19 +309,19 @@ const render = (products, pagination) => {
  * Select the number of products to display
  */
 selectShow.addEventListener('change', async (event) => {
-  fetchProducts(currentPagination.currentPage, parseInt(event.target.value), selectBrand.value, currentRecent, currentReasonablePrice, selectSort.value)
+  fetchProducts(parseInt(currentPagination.currentPage), parseInt(event.target.value), selectBrand.value, currentRecent, currentReasonablePrice, selectSort.value, selectFavorites.value)
     .then(setCurrentProducts)
     .then(() => render(currentProducts, currentPagination));
 });
 
 selectPage.addEventListener('change', async (event) => {
-  fetchProducts(parseInt(event.target.value), selectShow.value, selectBrand.value, currentRecent, currentReasonablePrice, selectSort.value)
+  fetchProducts(parseInt(event.target.value), parseInt(selectShow.value), selectBrand.value, currentRecent, currentReasonablePrice, selectSort.value, selectFavorites.value)
     .then(setCurrentProducts)
     .then(() => render(currentProducts, currentPagination));
 });
 
 selectBrand.addEventListener('change', async (event) => {
-  fetchProducts(selectPage.value, selectShow.value, event.target.value, currentRecent, currentReasonablePrice, selectSort.value)
+  fetchProducts(parseInt(selectPage.value), parseInt(selectShow.value), event.target.value, currentRecent, currentReasonablePrice, selectSort.value, selectFavorites.value)
     .then(setCurrentProducts)
     .then(() => render(currentProducts, currentPagination));
 });
@@ -287,12 +329,14 @@ selectBrand.addEventListener('change', async (event) => {
 inputRecent.addEventListener('change', async (event) => {
   if (event.target.checked) {
     currentRecent = event.target.value;
-    fetchProducts(selectPage.value, selectShow.value, selectBrand.value, currentRecent, currentReasonablePrice, selectSort.value)
+    fetchProducts(parseInt(selectPage.value), parseInt(selectShow.value), selectBrand.value, currentRecent, currentReasonablePrice, selectSort.value, selectFavorites.value)
       .then(setCurrentProducts)
       .then(() => render(currentProducts, currentPagination));
   } else {
     currentRecent = 'All';
-    fetchProducts(selectPage.value, selectShow.value, selectBrand.value, currentRecent, currentReasonablePrice, selectSort.value)
+    let page = selectPage.value;
+    if (selectPage.value == "") { page=1; } else { page=parseInt(page); };
+    fetchProducts(page, parseInt(selectShow.value), selectBrand.value, currentRecent, currentReasonablePrice, selectSort.value, selectFavorites.value)
       .then(setCurrentProducts)
       .then(() => render(currentProducts, currentPagination));
   }
@@ -301,22 +345,32 @@ inputRecent.addEventListener('change', async (event) => {
 inputReasonablePrice.addEventListener('change', async (event) => {
   if (event.target.checked) {
     currentReasonablePrice = event.target.value;
-    fetchProducts(selectPage.value, selectShow.value, selectBrand.value, currentRecent, event.target.value, selectSort.value)
+    fetchProducts(parseInt(selectPage.value), parseInt(selectShow.value), selectBrand.value, currentRecent, event.target.value, selectSort.value, selectFavorites.value)
       .then(setCurrentProducts)
       .then(() => render(currentProducts, currentPagination));
   } else {
     currentReasonablePrice = 'All';
-    fetchProducts(selectPage.value, selectShow.value, selectBrand.value, currentRecent, currentReasonablePrice, selectSort.value)
+    let page = selectPage.value;
+    if (selectPage.value == "") { page=1; } else { page=parseInt(page); };
+    fetchProducts(page, parseInt(selectShow.value), selectBrand.value, currentRecent, currentReasonablePrice, selectSort.value, selectFavorites.value)
       .then(setCurrentProducts)
       .then(() => render(currentProducts, currentPagination));
   }
 });
 
 selectSort.addEventListener('change', async (event) => {
-  fetchProducts(selectPage.value, selectShow.value, selectBrand.value, currentRecent, currentReasonablePrice, event.target.value)
+  fetchProducts(parseInt(selectPage.value), parseInt(selectShow.value), selectBrand.value, currentRecent, currentReasonablePrice, event.target.value, selectFavorites.value)
     .then(setCurrentProducts)
     .then(() => render(currentProducts, currentPagination));
-})
+});
+
+selectFavorites.addEventListener('change', async (event) => {
+  let page = selectPage.value;
+  if (selectPage.value == "") { page=1; } else { page=parseInt(page); };
+  fetchProducts(page, parseInt(selectShow.value), selectBrand.value, currentRecent, currentReasonablePrice, selectSort.value, event.target.value)
+    .then(setCurrentProducts)
+    .then(() => render(currentProducts, currentPagination));
+});
 
 document.addEventListener('DOMContentLoaded', async () => {
   const products = await fetchProducts();
