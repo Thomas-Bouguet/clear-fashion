@@ -1,6 +1,11 @@
 const fetch = require('node-fetch');
 const cheerio = require('cheerio');
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
+};
 
 /**
  * Parse webpage e-shop
@@ -27,8 +32,11 @@ const cheerio = require('cheerio');
             .find('product-name')
             .find('a')
             .attr('href');
+        let released = new Date(getRandomInt(1616660138,1648196138) * 1000);
+        released = released.toLocaleDateString();
+        released = released.split("/").reverse().join("-");
   
-        return {brand, name, price};
+        return {brand, name, price, released};
       })
       .get();
   };

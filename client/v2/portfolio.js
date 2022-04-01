@@ -69,11 +69,19 @@ const fetchProducts = async (page = 1, size = 12, brnd = 'All', date = 'All', pr
   }
   try { 
     let toFetch = new String;
-    if (brnd === 'All') {
-      toFetch = `https://clear-fashion-navy.vercel.app/products/search?page=${page}&size=${size}`; // API prof :*/`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`;
+    if (toSort !== "none") {
+      if (brnd === 'All') {
+        toFetch = `https://clear-fashion-navy.vercel.app/products/search?page=1&size=${currentPagination.count}`; // API prof :*/`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`;
+      } else {
+        toFetch = /*`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`; //*/`https://clear-fashion-navy.vercel.app/products/search?page=1&size=${currentPagination.count}&brand=${brnd}`;
+      }
     } else {
-      toFetch = /*`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`; //*/`https://clear-fashion-navy.vercel.app/products/search?page=${page}&size=${size}&brand=${brnd}`;
-    }
+      if (brnd === 'All') {
+        toFetch = `https://clear-fashion-navy.vercel.app/products/search?page=${page}&size=${size}`; // API prof :*/`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`;
+      } else {
+        toFetch = /*`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`; //*/`https://clear-fashion-navy.vercel.app/products/search?page=${page}&size=${size}&brand=${brnd}`;
+      }
+    };
     const response = await fetch(
       toFetch
     );
@@ -85,7 +93,7 @@ const fetchProducts = async (page = 1, size = 12, brnd = 'All', date = 'All', pr
     }
 
     if (toSort !== 'none') {
-      body.data.result = sortProduct(body.data.result, toSort);
+      body.data.result = sortProduct(body.data.result, toSort).slice((page-1)*size,page*size);
     }
 
     return body.data;
@@ -198,7 +206,7 @@ const renderProducts = products => {
 
       const childDiv = document.createElement('div');
       childDiv.setAttribute("class","sub_product");
-      childDiv.setAttribute("id",product.uuid);
+      childDiv.setAttribute("id",product._id);
 
       const span1 = document.createElement('span');
       span1.setAttribute("class","product_span1")
@@ -219,13 +227,26 @@ const renderProducts = products => {
         span2.innerHTML = "Unknown";
       }
 
+      const span3 = document.createElement('span');
+      span3.setAttribute("class","product_span3")
+      try {
+        span3.innerHTML = product.released;
+      } catch (e) {
+        console.log('Error: ', e);
+        span3.innerHTML = "Unknown";
+      }
+
       const button = document.createElement('button');
       button.id = product.uuid+"_button";
-      button.setAttribute("value",product.uuid);
+      button.setAttribute("value",product._id);
       button.setAttribute("type","button");
-      button.innerHTML = "Add to favorites";
+      if (favorites.find( fav =>  fav._id===button.value )) {
+        button.innerHTML = "Remove from favorites";
+      } else {
+        button.innerHTML = "Add to favorites";
+      };
       button.addEventListener('click', async (event) => {
-        if (favorites.find( fav =>  fav.uuid===button.value )) { 
+        if (favorites.find( fav =>  fav._id===button.value )) { 
           favorites.splice(favorites.indexOf(product),1);
           button.innerHTML = "Add to favorites";
         } else {
@@ -238,6 +259,7 @@ const renderProducts = products => {
       childDiv.appendChild(span1);
       childDiv.appendChild(a);
       childDiv.appendChild(span2);
+      childDiv.appendChild(span3);
       productDiv.appendChild(childDiv);
       productDiv.appendChild(button);
       div.appendChild(productDiv);

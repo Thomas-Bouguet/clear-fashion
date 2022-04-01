@@ -27,6 +27,10 @@ section {
     padding: 10px;
 }
 
+#options {
+    margin-top: 100px;
+}
+
 .div_in_section {
     position: relative;
     margin: 0px;
@@ -105,19 +109,32 @@ section {
     margin-right: 6px;
 }
 
+.product_span3 {
+    margin-right: 6px;
+}
+
 button {
     border-radius: 5px;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-color: dimgray;
+    color: white;
+    font-size: 10px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+button:hover {
+    transform: scale(1.05);
 }
 
-select {
+select, input {
     border-radius: 5px;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-
-input {
-    border-radius: 5px;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    border-radius: 10px;
+    text-align: center;
+    background-color: #eee;
 }
 
 /* section div {
